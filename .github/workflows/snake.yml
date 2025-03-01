@@ -1,34 +1,45 @@
-name: Generate snake animation
+name: GitHub Snake Game
 
 on:
-  schedule: # execute every 12 hours
-    - cron: "* */12 * * *"
-
+  # Planifier l’exécution du workflow chaque jour à minuit UTC
+  schedule:
+    - cron: "0 0 * * *"
+  # Autoriser le déclenchement manuel du workflow
   workflow_dispatch:
-
+  # Déclencher le workflow lors d’un push sur la branche principale
   push:
     branches:
-    - main
+      - main
 
 jobs:
   generate:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-
+    timeout-minutes: 10
     steps:
-      - name: generate snake.svg
-        uses: Platane/snk/svg-only@v3
+      # Étape 1 : Récupérer le dépôt
+      - name: Récupération du dépôt
+        uses: actions/checkout@v3
+
+      # Étape 2 : Générer les animations Snake
+      - name: Générer les animations de contributions GitHub
+        uses: Platane/snk@v3
         with:
+          # Nom d’utilisateur GitHub pour l’animation
           github_user_name: ${{ github.repository_owner }}
-          outputs: dist/snake.svg?palette=github-dark
-
-
-      - name: push snake.svg to the output branch
-        uses: crazy-max/ghaction-github-pages@v3.1.0
-        with:
-          target_branch: output
-          build_dir: dist
+          # Définir les fichiers de sortie avec leurs configurations
+          outputs: |
+            dist/github-snake.svg
+            dist/github-snake-dark.svg?palette=github-dark
+            dist/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Étape 3 : Déployer les fichiers générés dans la branche "output"
+      - name: Déployer dans la branche Output
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: output
+          # Message de commit personnalisé (optionnel)
+          commit_message: "Update snake animation [skip ci]"
