@@ -6,7 +6,7 @@ on:
     - cron: "0 0 * * *"
   # Autoriser le déclenchement manuel du workflow
   workflow_dispatch:
-  # Déclencher le workflow lors d’un push sur la branche principale
+  # Déclencher le workflow lors d’un push sur la branche principal
   push:
     branches:
       - main
